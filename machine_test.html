@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Management</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background-color: #f4f4f9;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.search-add {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+#addItemForm {
+    display: none;
+    margin-bottom: 20px;
+}
+
+.hidden {
+    display: none;
+}
+
+input, select, button {
+    padding: 10px;
+    margin: 5px;
+    font-size: 16px;
+}
+
+button {
+    cursor: pointer;
+    background-color: #28a745;
+    color: white;
+    border: none;
+}
+
+button:hover {
+    background-color: #218838;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    margin-bottom: 15px;
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+li button {
+    background-color: #dc3545;
+}
+
+li button:hover {
+    background-color: #c82333;
+}
+    </style>
+    <script>
+        let inventory = [];
+let totalValue = 0;
+
+function showAddItemForm() {
+    document.getElementById("addItemForm").classList.remove("hidden");
+}
+
+function hideAddItemForm() {
+    document.getElementById("addItemForm").classList.add("hidden");
+}
+
+function addItem() {
+    let name = document.getElementById("itemName").value;
+    let quantity = parseInt(document.getElementById("itemQuantity").value);
+    let price = parseFloat(document.getElementById("itemPrice").value);
+    let category = document.getElementById("itemCategory").value;
+
+    // Basic Validations
+    if (!name || quantity <= 0 || price <= 0) {
+        alert("Please enter valid item details.");
+        return;
+    }
+
+    let item = { name, quantity, price, category };
+    inventory.push(item);
+    updateInventory();
+    hideAddItemForm();
+}
+
+function deleteItem(index) {
+    inventory.splice(index, 1);
+    updateInventory();
+}
+
+function updateInventory() {
+    let itemList = document.getElementById("itemList");
+    itemList.innerHTML = "";
+
+    totalValue = 0;
+
+    inventory.forEach((item, index) => {
+        let listItem = document.createElement("li");
+        listItem.innerHTML = `
+            <strong>${item.name}</strong> (Category: ${item.category})<br>
+            Quantity: ${item.quantity}, Price: $${item.price.toFixed(2)}<br>
+            <button onclick="deleteItem(${index})">Delete</button>
+        `;
+        itemList.appendChild(listItem);
+
+        totalValue += item.quantity * item.price;
+    });
+
+    document.getElementById("totalValue").textContent = $$;totalValue.toFixed(2)
+}
+
+function searchItems() {
+    let searchQuery = document.getElementById("search").value.toLowerCase();
+
+    let filteredItems = inventory.filter(item => 
+        item.name.toLowerCase().includes(searchQuery) || item.category.toLowerCase().includes(searchQuery)
+    );
+
+    displayFilteredItems(filteredItems);
+}
+
+function displayFilteredItems(filteredItems) {
+    let itemList = document.getElementById("itemList");
+    itemList.innerHTML = "";
+
+    filteredItems.forEach((item, index) => {
+        let listItem = document.createElement("li");
+        listItem.innerHTML = `
+            <strong>${item.name}</strong> (Category: ${item.category})<br>
+            Quantity: ${item.quantity}, Price: $${item.price.toFixed(2)}<br>
+            <button onclick="deleteItem(${index})">Delete</button>
+        `;
+        itemList.appendChild(listItem);
+    });
+}
+
+function sortItems(order) {
+    if (order === 'asc') {
+        inventory.sort((a, b) => a.price - b.price);
+    } else if (order === 'desc') {
+        inventory.sort((a, b) => b.price - a.price);
+    }
+    updateInventory();
+}
+    </script>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Inventory Management System</h1>
+
+        <!-- Search and Add Item Section -->
+        <div class="search-add">
+            <input type="text" id="search" placeholder="Search by Name or Category" oninput="searchItems()">
+            <button onclick="showAddItemForm()">Add Item</button>
+        </div>
+
+        <!-- Add Item Form -->
+        <div id="addItemForm" class="hidden">
+            <input type="text" id="itemName" placeholder="Item Name" required>
+            <input type="number" id="itemQuantity" placeholder="Quantity" required>
+            <input type="number" id="itemPrice" placeholder="Price" required>
+            <select id="itemCategory">
+                <option value="Electronics">Electronics</option>
+                <option value="Groceries">Groceries</option>
+                <option value="Clothing">Clothing</option>
+            </select>
+            <button onclick="addItem()">Add Item</button>
+            <button onclick="hideAddItemForm()">Cancel</button>
+        </div>
+
+        <!-- Inventory List -->
+        <div id="inventoryList">
+            <button onclick="sortItems('asc')">Sort by Price Ascending</button>
+            <button onclick="sortItems('desc')">Sort by Price Descending</button>
+
+            <ul id="itemList"></ul>
+        </div>
+
+        <!-- Total Value -->
+        <div>
+            <h3>Total Inventory Value: <span id="totalValue">$0.00</span></h3>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
